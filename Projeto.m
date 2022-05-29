@@ -39,23 +39,78 @@ for i = 1:7
     plotgraph(exp, user, label, xn, Ts, nomes_atividades);
 end
 
-%% 3.1 DFT para cada segmento de sinal
+%% 3.1 DFT para cada segmento de sinal || 3.2 Frequencias Relevantes
+
+
 experiencia = '09';
 utilizador = '05';
 exp = str2double(experiencia);
 user = str2double(utilizador);
 DFT(user, exp, xn, label, nomes_atividades)
-
-%for i = 1:7
+fprintf("\n\n\n\n");
+for i = 1:7
      % Atualizar as variaveis para ler outro ficheiro
-    exp = exp+1;
-    user = ceilDiv(exp,2);
-    xn = load("acc_exp"+ exp+ "_user0"+ user + ".txt");
-    label = load("labels.txt");
-    l_index = find(label(:,1) == exp & label(:,2) == user);
-    label = label(l_index, 3:end);
+     exp = exp+1;
+     user = ceilDiv(exp,2);
+     xn = load("acc_exp"+ exp+ "_user0"+ user + ".txt");
+     label = load("labels.txt");
+     l_index = find(label(:,1) == exp & label(:,2) == user);
+     label = label(l_index, 3:end);
 
-    DFT(user, exp, xn, label, nomes_atividades)
-%end
+     DFT(user, exp, xn, label, nomes_atividades);
 
-%% 3.2 
+end
+
+%% 3.3 Numero de passos por minuto por utilizador
+% Frequencias no Eixo do X de cada user
+% Walk
+w5 = [1.6770  0.0000 1.8579  1.8212];
+w6 = [1.713 1.7526  1.7598];
+w7 = [1.7609  1.8127 1.8557  1.8480];
+w8 = [1.7876  1.8667  1.7730 1.9276  1.9231];
+
+% Walk up
+wu5 = [1.5284  1.6535  1.6432 1.6835  1.6696  1.7513 ];
+wu6 = [1.5695  1.6746  1.6129 1.6535];
+wu7 = [1.4727  1.7327  1.7736 1.7002  1.7129  1.7129 ];
+wu8 = [1.8325  1.8584 1.8072  1.9608  1.8591];
+
+% Walk down
+wd5 = [0.0000  1.6935  1.8103 1.8072];
+wd6 = [1.7736  1.8041  1.7949 1.7766  0.0000  1.7766];
+wd7 = [1.4583  1.5949  1.8784 1.7617  1.8919];
+wd8 = [1.7889  2.0588  2.0154 2.2869  2.1053 2.0790];
+
+% Totais
+w = [w5 w6 w7 w8];
+wu = [wu5 wu6 wu7 wu8];
+wd = [wd5 wd6 wd7 wd8];
+
+% No passos
+step_5 = mean(w5) * 60;
+step_6 = mean(w6) * 60;
+step_7 = mean(w7) * 60;
+step_8 = mean(w8) * 60;
+
+step_u5 = mean(wu5) * 60;
+step_u6 = mean(wu6) * 60;
+step_u7 = mean(wu7) * 60;
+step_u8 = mean(wu8) * 60;
+
+step_d5 = mean(wd5) * 60;
+step_d6 = mean(wd6) * 60;
+step_d7 = mean(wd7) * 60;
+step_d8 = mean(wd8) * 60;
+
+% Media e Desvio Padrao
+media = mean(w) * 60;
+mediaU = mean(wu) * 60;
+mediaD = mean(wd) * 60;
+
+desvio = std(w) * 60;
+desvioU = std(wu) * 60;
+desvioD = std(wd) * 60;
+
+%% 3.4 Diferencas entre Estaticas, Dinamicas e Transicao
+
+
