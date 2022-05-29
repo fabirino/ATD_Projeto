@@ -40,7 +40,7 @@ for i = 1:7
 end
 
 %% 3.1 DFT para cada segmento de sinal || 3.2 Frequencias Relevantes
-
+%% 3.4 e 3.5 
 
 experiencia = '09';
 utilizador = '05';
@@ -48,7 +48,7 @@ exp = str2double(experiencia);
 user = str2double(utilizador);
 DFT(user, exp, xn, label, nomes_atividades)
 fprintf("\n\n\n\n");
-for i = 1:7
+% for i = 1:7
      % Atualizar as variaveis para ler outro ficheiro
      exp = exp+1;
      user = ceilDiv(exp,2);
@@ -59,7 +59,7 @@ for i = 1:7
 
      DFT(user, exp, xn, label, nomes_atividades);
 
-end
+% end
 
 %% 3.3 Numero de passos por minuto por utilizador
 % Frequencias no Eixo do X de cada user
@@ -111,6 +111,57 @@ desvio = std(w) * 60;
 desvioU = std(wu) * 60;
 desvioD = std(wd) * 60;
 
-%% 3.4 Diferencas entre Estaticas, Dinamicas e Transicao
+%% 4.1
+
+N = length(xn);
+% Dividir o sinal em segmentos de tamanho 30 (30 obtido por tentativas)
+Nframe = floor(N/30);
+freq_rel = [];
+t_frames = [];
+
+
+if (mod(Nframe,2) == 0)
+    f_frame = (-fs/2):fs/Nframe:(fs/2) - fs/Nframe;
+else
+    f_frame = (-fs/2)+(fs/(2*Nframe)):fs/Nframe:(fs/2)-(fs/(2*Nframe));
+end
+
+% Janela retangular
+for i = 1:Nframe:N-Nframe+1
+    % considerar apenas o eixo dos z
+    x_frame = xn(i:i+Nframe-1, 3);
+    m_x_frame = abs(fftshift(fft(x_frame)));
+    m_x_frame_max = max(m_x_frame(abs(f_frame) > 0.01));
+
+    x = find(m_x_frame == m_x_frame_max);
+    t_frame = tt(i:i+Nframe+1);
+
+    freq_rel = [freq_rel f_frame(x)];
+    % time corresponding to the middle sample of the window
+    t_frames = [t_frames t_frame(round(Nframe/2)+1)];
+
+end
+
+freq_rel = freq_rel(freq_rel > 0);
+
+figure;
+stem(t_frames, freq_rel);
+xlabel("Time (s)");
+ylabel("Frequency (Hz)");
+title("Janela Retangular (exp:" + exp+ ", user:" + user + ")");
+
+% Janela de Hamming
+Tframe = 0.128; % largura da janela de análise em s
+Toverlap = 0.064; % sobreposiçao das janelas em s
+Nframe = round(Tframe*fs); % número de amostras na janela
+Noverlap = round(Toverlap*fs); % número de amostras sobrepostas na janela
+
+h = hamming(Nframe); % janela de hamming
+
+figure;
+plot(0:Nframe-1,h)
+axis tight
+xlabel('n')
+title("Janela de Hamming(exp:" + exp+ ", user:" + user + ")")
 
 

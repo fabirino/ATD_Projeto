@@ -100,5 +100,12 @@ function [] = DFT(user, exp, xn, label, nomes_atividades)
             fprintf("%.4f  ", freqsZ(k));
         end
         fprintf("\n\n");
+
+
+        figure()
+        spectrogram(xn(inicio:fim, 3));
+        spectrogram(xn(inicio:fim, 3),'yaxis');
+        title("Activity: " + nomes_atividades(i));
+
     end
 end
