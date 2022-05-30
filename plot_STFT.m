@@ -10,12 +10,11 @@ Toverlap = Tframe/2;
 
 b = blackman(Nframe);
 
-Noverlap = round(Toverlap*Fs);
 espetro = [];
 n = 0;
 ti_frame = [];
 
-for i = 1:Nframe:N-Nframe
+for i = 1:Nframe-Toverlap:N-Nframe
     x_frame = data(i:i+Nframe-1).*b;
     x_frame = abs(fftshift(fft(x_frame)));
     ti_frame = [ti_frame n*Nframe/Fs];
@@ -28,7 +27,6 @@ imagesc('XData',ti_frame,'YData',f_frame,'CData',mag2db(espetro));
 colorbar;
 xlabel('t [s]')
 ylabel('f [Hz]')
-title(['STFT | Window size: ',num2str(intervalo, '%.3fxt | OverLap 5%')])
-
+title(['STFT | Window size: ',num2str(intervalo, '%.3fxt | OverLap 50%')])
 end
 
