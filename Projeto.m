@@ -158,10 +158,24 @@ Noverlap = round(Toverlap*fs); % número de amostras sobrepostas na janela
 
 h = hamming(Nframe); % janela de hamming
 
+
 figure;
 plot(0:Nframe-1,h)
 axis tight
 xlabel('n')
 title("Janela de Hamming(exp:" + exp+ ", user:" + user + ")")
 
+
+w = hann(Nframe); % janela de hanning
+
+
+%janela de blackman
+b = blackman(Nframe);
+wvtool(h,w,b)
+
+figure;
+plot(0:Nframe-1,b)
+axis tight
+xlabel('n')
+title("Janela de Blackman(exp:" + exp + ",user:" + user + ")")
 
