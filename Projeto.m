@@ -27,7 +27,7 @@ tt = tt';
 plotgraph(exp, user, label, xn, Ts, nomes_atividades);
 
 % Plot para todos ficheiros
-for i = 1:7
+% for i = 1:7
     % Atualizar as variaveis para ler outro ficheiro
     exp = exp+1;
     user = ceilDiv(exp,2);
@@ -36,8 +36,8 @@ for i = 1:7
     l_index = find(label(:,1) == exp & label(:,2) == user);
     label = label(l_index, 3:end);
 
-    plotgraph(exp, user, label, xn, Ts, nomes_atividades);
-end
+%     plotgraph(exp, user, label, xn, Ts, nomes_atividades);
+% end
 
 %% 3.1 DFT para cada segmento de sinal || 3.2 Frequencias Relevantes
 %% 3.4 e 3.5 
@@ -115,7 +115,7 @@ desvioD = std(wd) * 60;
 
 N = length(xn);
 % Dividir o sinal em segmentos de tamanho 30 (30 obtido por tentativas)
-Nframe = floor(N/30);
+Nframe = floor(N/60);
 freq_rel = [];
 t_frames = [];
 
@@ -144,38 +144,33 @@ end
 
 freq_rel = freq_rel(freq_rel > 0);
 
-figure;
-stem(t_frames, freq_rel);
-xlabel("Time (s)");
-ylabel("Frequency (Hz)");
-title("Janela Retangular (exp:" + exp+ ", user:" + user + ")");
-
-% Janela de Hamming
-Tframe = 0.128; % largura da janela de análise em s
-Toverlap = 0.064; % sobreposiçao das janelas em s
-Nframe = round(Tframe*fs); % número de amostras na janela
-Noverlap = round(Toverlap*fs); % número de amostras sobrepostas na janela
+%Atividade Walk do user 5 experiencia 9
+l = label(label(:,1) == 1, 2:end);
+inicio = l(1,1);
+fim = l(1, 2);
+N = fim - inicio;
+Nframe = floor(N/11);
 
 h = hamming(Nframe); % janela de hamming
-
-
-figure;
-plot(0:Nframe-1,h)
-axis tight
-xlabel('n')
-title("Janela de Hamming(exp:" + exp+ ", user:" + user + ")")
-
-
 w = hann(Nframe); % janela de hanning
+b = blackman(Nframe); %janela de blackman
 
+wvtool(h,w,b);
 
-%janela de blackman
-b = blackman(Nframe);
-wvtool(h,w,b)
+espetro = [];
 
-figure;
-plot(0:Nframe-1,b)
-axis tight
-xlabel('n')
-title("Janela de Blackman(exp:" + exp + ",user:" + user + ")")
+f = linspace(-fs/2,fs/2,Nframe);
+x =  find(f>=0);
+
+for i = 1:Nframe:N-Nframe
+    x_frame = xn(i:i+Nframe-1).*w;
+    m_X_frame = abs(fftshift(fft(x_frame)));
+    espetro = horzcat(espetro,m_X_frame(x)); %horzcat faz a concatenação de arrays horizontalmente
+end
+figure();
+imagesc(20*log10(espetro))
+
+%% 4.2 4.3
+
+plot_STFT(xn);
 
